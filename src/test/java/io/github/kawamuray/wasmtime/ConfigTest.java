@@ -1,8 +1,12 @@
 package io.github.kawamuray.wasmtime;
 
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import org.junit.Assert;
 import org.junit.Test;
 
+@Data
 public class ConfigTest {
     @Test
     public void testNewConfig(){

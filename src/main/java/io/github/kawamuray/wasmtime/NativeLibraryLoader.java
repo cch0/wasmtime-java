@@ -60,7 +60,8 @@ public final class NativeLibraryLoader {
         Platform platform = detectPlatform();
         String version = libVersion();
         String ext = platform.ext;
-        String fileName = platform.prefix + NATIVE_LIBRARY_NAME + '_' + version + '_' + platform.classifier;
+        String fileName = platform.prefix + NATIVE_LIBRARY_NAME + '_' + version + '_' + platform.classifier
+            + '_' + platform.arch;
         Path tempFile = Files.createTempFile(fileName, ext);
         try (InputStream in = NativeLibraryLoader.class.getResourceAsStream('/' + fileName + ext)) {
             Files.copy(in, tempFile, StandardCopyOption.REPLACE_EXISTING);
@@ -79,23 +80,31 @@ public final class NativeLibraryLoader {
 
     @AllArgsConstructor
     private enum Platform {
-        LINUX("linux","lib" , ".so"),
-        MACOS("macos","lib", ".dylib"),
-        WINDOWS("windows","",".dll")
+        LINUX_X86_64("linux","lib" , ".so", "x86_64"),
+        MACOS_ARM64("macos","lib", ".dylib", "aarch64"),
+        MACOS_X86_64("macos","lib", ".dylib", "x86_64"),
+        WINDOWS("windows","",".dll", "")
         ;
 
         final String classifier;
         final String prefix;
         final String ext;
+        final String arch;
     }
 
     private static Platform detectPlatform() {
         String os = System.getProperty("os.name").toLowerCase();
-        if (os.contains("linux")) {
-            return Platform.LINUX;
+        String arch = System.getProperty("os.arch").toLowerCase();
+
+        if (os.contains("linux") && arch.contains("x86_64")) {
+            return Platform.LINUX_X86_64;
         }
         if (os.contains("mac os") || os.contains("darwin")) {
-            return Platform.MACOS;
+          if (arch.contains("x86_64")) {
+            return Platform.MACOS_X86_64;
+          } else {
+            return Platform.MACOS_ARM64;
+          }
         }
         if(os.toLowerCase().contains("windows")){
             return Platform.WINDOWS;
