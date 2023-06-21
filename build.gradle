@@ -171,6 +171,15 @@ task buildJniLibForArm64Darwin(type:Exec) {
     commandLine args
 }
 
+task copyJniLibForArm64Darwin(type: Copy) {
+    dependsOn 'buildJniLibForArm64Darwin'
+    def targetDir = rustTargetTriple() ?: ""
+    from "wasmtime-jni/target/$targetDir/release"
+    include '*.so', '*.dylib', "*.dll"
+    rename "^(lib)?wasmtime_jni", "\$1wasmtime_jni_${project.version}_${jniLibOsClassifier()}"
+    into new File(project.buildDir, "jni-libs")
+}
+
 task buildJniLib(type:Exec) {
     dependsOn 'generateJniInterfaces'
     workingDir './wasmtime-jni'
