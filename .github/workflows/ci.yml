@@ -8,35 +8,55 @@ on:
     branches: [ master ]
 
 jobs:
+
+  build-macos-aarch64:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up JDK 1.8
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.8
+
+      - name: Set up Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly
+          override: true
+          components: rustfmt
+
+      - name: build ARM64 Darwin
+        run: |
+          rustup component add rust-src --toolchain nightly-x86_64-apple-darwin
+          rustup target add aarch64-apple-darwin        
+          JNILIB_RUST_TARGET=aarch64-apple-darwin ./gradlew copyJniLibForArm64Darwin
+          ls -l wasmtime-jni/target/aarch64-apple-darwin/release
+          ls -l wasmtime-jni/target/release
+          ls -l build/jni-libs/
+
+      - name: Save JNI lib output
+        #      if: startsWith(github.ref, 'refs/tags/')
+        uses: actions/upload-artifact@v2
+        with:
+          name: jni-libs
+          path: build/jni-libs/*
+
+
+
   build:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macos-latest]
+        os: [ubuntu-latest, macos-latest]
 #        os: [ubuntu-latest, macos-latest, windows-latest]
     steps:
     - uses: actions/checkout@v2
 
-#    - name: echo
-#      shell: bash
-#      run: |
-#        whereis java
-#        which java
-#        echo "JAVA_HOME_8_X64 -> $JAVA_HOME_8_X64"
-#        rustc -vV
-#        cargo --version
-
-    - name: echo mac
-      shell: bash
-      run: |
-        xcrun --show-sdk-path
-        xcrun --show-sdk-version
-        
-
-#    - name: Set up JDK 1.8
-#      uses: actions/setup-java@v1
-#      with:
-#        java-version: 1.8
+    - name: Set up JDK 1.8
+      uses: actions/setup-java@v1
+      with:
+        java-version: 1.8
 
     - name: Set up Rust
       uses: actions-rs/toolchain@v1
@@ -46,17 +66,8 @@ jobs:
         override: true
         components: rustfmt
 
-#    - name: Build with Gradle
-#      run: ./gradlew build copyJniLib
-
-    - name: build ARM64 Darwin
-      run: |
-        rustup component add rust-src --toolchain nightly-x86_64-apple-darwin
-        rustup target add aarch64-apple-darwin        
-        JNILIB_RUST_TARGET=aarch64-apple-darwin ./gradlew copyJniLibForArm64Darwin
-        ls -l wasmtime-jni/target/aarch64-apple-darwin/release
-        ls -l wasmtime-jni/target/release
-        ls -l build/jni-libs/
+    - name: Build with Gradle
+      run: ./gradlew build copyJniLib
 
     - name: Save JNI lib output
 #      if: startsWith(github.ref, 'refs/tags/')
@@ -65,22 +76,22 @@ jobs:
         name: jni-libs
         path: build/jni-libs/*
 
-#  collect:
-#    needs: build
-#    runs-on: ubuntu-latest
-#    steps:
-#      - uses: actions/checkout@v2
-#      - name: Set up JDK 1.8
-#        uses: actions/setup-java@v1
-#        with:
-#          java-version: 1.8
-#      - name: Restore JNI libs
-#        uses: actions/download-artifact@v2
-#        with:
-#          name: jni-libs
-#          path: build/jni-libs
-#      - name: Build universal jar
-#        run: ./gradlew universalJar
+  collect:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up JDK 1.8
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.8
+      - name: Restore JNI libs
+        uses: actions/download-artifact@v2
+        with:
+          name: jni-libs
+          path: build/jni-libs
+      - name: Build universal jar
+        run: ./gradlew universalJar
 
   publish:
     if: startsWith(github.ref, 'refs/tags/')
