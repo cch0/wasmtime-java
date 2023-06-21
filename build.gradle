@@ -59,11 +59,15 @@ test {
 
 static def jniLibOsClassifier() {
     def os = System.getProperty("os.name").toLowerCase()
+    System.out.println("OS name -> " + System.getProperty("os.name"));
+    System.out.println("OS version -> " + System.getProperty("os.version"));
+    System.out.println("OS Architecture -> " + System.getProperty("os.arch"));
+
     if (os.contains("linux")) {
-        return "linux"
+        return String.join("_", "linux", System.getProperty("os.arch"));
     }
     if (os.contains("mac os") || os.contains("darwin")) {
-        return "macos"
+        return String.join("_", "macos", System.getProperty("os.arch"));
     }
     if (os.contains("windows")){
         return "windows"
@@ -157,7 +161,7 @@ task generateJniInterfaces(type:JavaExec) {
 task buildJniLib(type:Exec) {
     dependsOn 'generateJniInterfaces'
     workingDir './wasmtime-jni'
-    def args = ['cargo', 'build', '--release']
+    def args = ['cargo', '+nightly', 'build', '--release']
     def triple = rustTargetTriple()
     if (triple != null) {
         args += ['--target', triple]
