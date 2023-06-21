@@ -56,9 +56,10 @@ jobs:
         JNILIB_RUST_TARGET=aarch64-apple-darwin ./gradlew copyJniLibForArm64Darwin
         ls -l wasmtime-jni/target/aarch64-apple-darwin/release
         ls -l wasmtime-jni/target/release
+        ls -l build/jni-libs/
 
     - name: Save JNI lib output
-      if: startsWith(github.ref, 'refs/tags/')
+#      if: startsWith(github.ref, 'refs/tags/')
       uses: actions/upload-artifact@v2
       with:
         name: jni-libs
