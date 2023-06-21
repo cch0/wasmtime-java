@@ -80,8 +80,9 @@ public final class NativeLibraryLoader {
 
     @AllArgsConstructor
     private enum Platform {
-        LINUX_X86_64("linux","lib" , ".so", "x86_64"),
-        MACOS_ARM64("macos","lib", ".dylib", "aarch64"),
+        LINUX_AMD64("linux","lib" , ".so", "amd64"),
+        LINUX_AARCH64("linux","lib" , ".so", "aarch64"),
+        MACOS_AARCH64("macos","lib", ".dylib", "aarch64"),
         MACOS_X86_64("macos","lib", ".dylib", "x86_64"),
         WINDOWS("windows","",".dll", "")
         ;
@@ -96,14 +97,14 @@ public final class NativeLibraryLoader {
         String os = System.getProperty("os.name").toLowerCase();
         String arch = System.getProperty("os.arch").toLowerCase();
 
-        if (os.contains("linux") && arch.contains("x86_64")) {
-            return Platform.LINUX_X86_64;
+        if (os.contains("linux") && arch.contains("amd64")) {
+            return Platform.LINUX_AMD64;
         }
         if (os.contains("mac os") || os.contains("darwin")) {
           if (arch.contains("x86_64")) {
             return Platform.MACOS_X86_64;
           } else {
-            return Platform.MACOS_ARM64;
+            return Platform.MACOS_AARCH64;
           }
         }
         if(os.toLowerCase().contains("windows")){
