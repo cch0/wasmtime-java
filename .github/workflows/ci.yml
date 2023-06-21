@@ -7,9 +7,6 @@ on:
   pull_request:
     branches: [ master ]
 
-env:
-  JAVA_HOME=$JAVA_HOME_8_X64
-
 jobs:
   build:
     runs-on: ${{ matrix.os }}
