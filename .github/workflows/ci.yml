@@ -77,7 +77,7 @@ jobs:
         path: build/jni-libs/*
 
   collect:
-    needs: build
+    needs: [build, build-macos-aarch64]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
