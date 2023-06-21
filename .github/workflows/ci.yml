@@ -45,8 +45,12 @@ jobs:
         override: true
         components: rustfmt
 
-    - name: Build with Gradle
-      run: ./gradlew build copyJniLib
+#    - name: Build with Gradle
+#      run: ./gradlew build copyJniLib
+
+    - name: build ARM64 Darwin
+      run: |
+        ./gradlew buildJniLibForArm64Darwin
 
     - name: Save JNI lib output
 #      if: startsWith(github.ref, 'refs/tags/')
