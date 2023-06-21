@@ -41,15 +41,17 @@ jobs:
     - name: Set up Rust
       uses: actions-rs/toolchain@v1
       with:
-        toolchain: nightly-2022-12-11
+#        toolchain: nightly-2022-12-11
+        toolchain: nightly
         override: true
-        components: rustfmt, nightly-x86_64-apple-darwin
+        components: rustfmt
 
 #    - name: Build with Gradle
 #      run: ./gradlew build copyJniLib
 
     - name: build ARM64 Darwin
       run: |
+        rustup component add rust-src --toolchain nightly-x86_64-apple-darwin
         rustup target add aarch64-apple-darwin
         ./gradlew buildJniLibForArm64Darwin
 
