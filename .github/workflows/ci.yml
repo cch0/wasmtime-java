@@ -57,12 +57,12 @@ jobs:
         ls -l wasmtime-jni/target/aarch64-apple-darwin/release
         ls -l wasmtime-jni/target/release
 
-#    - name: Save JNI lib output
-#      if: startsWith(github.ref, 'refs/tags/')
-#      uses: actions/upload-artifact@v2
-#      with:
-#        name: jni-libs
-#        path: build/jni-libs/*
+    - name: Save JNI lib output
+      if: startsWith(github.ref, 'refs/tags/')
+      uses: actions/upload-artifact@v2
+      with:
+        name: jni-libs
+        path: build/jni-libs/*
 
 #  collect:
 #    needs: build
