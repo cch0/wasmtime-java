@@ -33,10 +33,10 @@ jobs:
         xcrun --show-sdk-version
         
 
-    - name: Set up JDK 1.8
-      uses: actions/setup-java@v1
-      with:
-        java-version: 1.8
+#    - name: Set up JDK 1.8
+#      uses: actions/setup-java@v1
+#      with:
+#        java-version: 1.8
 
     - name: Set up Rust
       uses: actions-rs/toolchain@v1
@@ -54,14 +54,15 @@ jobs:
         rustup component add rust-src --toolchain nightly-x86_64-apple-darwin
         rustup target add aarch64-apple-darwin
         ./gradlew copyJniLibForArm64Darwin
-        ls -l wasmtime-jni/target
+        ls -l wasmtime-jni/target/aarch64-apple-darwin
+        ls -l wasmtime-jni/target/release
 
-    - name: Save JNI lib output
+#    - name: Save JNI lib output
 #      if: startsWith(github.ref, 'refs/tags/')
-      uses: actions/upload-artifact@v2
-      with:
-        name: jni-libs
-        path: build/jni-libs/*
+#      uses: actions/upload-artifact@v2
+#      with:
+#        name: jni-libs
+#        path: build/jni-libs/*
 
 #  collect:
 #    needs: build
