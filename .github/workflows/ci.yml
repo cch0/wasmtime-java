@@ -43,7 +43,7 @@ jobs:
       with:
         toolchain: nightly-2022-12-11
         override: true
-        components: rustfmt
+        components: rustfmt, nightly-x86_64-apple-darwin
 
 #    - name: Build with Gradle
 #      run: ./gradlew build copyJniLib
@@ -51,7 +51,7 @@ jobs:
     - name: build ARM64 Darwin
       run: |
         rustup target add aarch64-apple-darwin
-        rustup component add rust-src --toolchain nightly-x86_64-apple-darwin
+#        rustup component add rust-src --toolchain nightly-x86_64-apple-darwin
         ./gradlew buildJniLibForArm64Darwin
 
     - name: Save JNI lib output
