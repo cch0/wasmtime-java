@@ -53,8 +53,9 @@ jobs:
       run: |
         rustup component add rust-src --toolchain nightly-x86_64-apple-darwin
         rustup target add aarch64-apple-darwin
+        JNILIB_RUST_TARGET=aarch64-apple-darwin
         ./gradlew copyJniLibForArm64Darwin
-        ls -l wasmtime-jni/target/aarch64-apple-darwin
+        ls -l wasmtime-jni/target/aarch64-apple-darwin/release
         ls -l wasmtime-jni/target/release
 
 #    - name: Save JNI lib output

@@ -174,6 +174,7 @@ task buildJniLibForArm64Darwin(type:Exec) {
 task copyJniLibForArm64Darwin(type: Copy) {
     dependsOn 'buildJniLibForArm64Darwin'
     System.out.println("target triple " + System.getenv("JNILIB_RUST_TARGET"))
+    System.out.println("jniLibOsClassifier " + jniLibOsClassifier())
     def targetDir = rustTargetTriple() ?: ""
     from "wasmtime-jni/target/$targetDir/release"
     include '*.so', '*.dylib', "*.dll"
