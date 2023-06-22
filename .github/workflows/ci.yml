@@ -37,7 +37,7 @@ jobs:
           override: true
           components: rustfmt
 
-      - name: specific to linux x86_64 cross build aarch64
+      - name: linux x86_64 cross build aarch64
         if: matrix.target == 'aarch64-unknown-linux-gnu'
         run: |
           sudo apt-get install -qy binutils-aarch64-linux-gnu gcc-aarch64-linux-gnu g++-aarch64-linux-gnu
@@ -77,8 +77,11 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest]
-#        os: [ubuntu-latest, macos-latest, windows-latest]
+        include:
+          - os: macos-12
+            target: x86_64-apple-darwin
+          - os: ubuntu-22.04
+            target: x86_64-unknown-linux-gnu
     steps:
     - uses: actions/checkout@v2
 
