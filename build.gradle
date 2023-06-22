@@ -160,10 +160,10 @@ task generateJniInterfaces(type:JavaExec) {
     }
 }
 
-task buildJniLibForArm64Darwin(type:Exec) {
+task buildJniLibCustomTarget(type:Exec) {
     dependsOn 'generateJniInterfaces'
     workingDir './wasmtime-jni'
-    def args = ['cargo', '+nightly', 'build', '--release', '--target', 'aarch64-apple-darwin', '-Zbuild-std']
+    def args = ['cargo', '+nightly', 'build', '--release', '--target', System.getenv("JNILIB_RUST_TARGET"), '-Zbuild-std']
     def triple = rustTargetTriple()
     if (triple != null) {
         args += ['--target', triple]
@@ -171,14 +171,14 @@ task buildJniLibForArm64Darwin(type:Exec) {
     commandLine args
 }
 
-task copyJniLibForArm64Darwin(type: Copy) {
-    dependsOn 'buildJniLibForArm64Darwin'
+task copyJniLibCustomTarget(type: Copy) {
+    dependsOn 'buildJniLibCustomTarget'
     System.out.println("target triple " + System.getenv("JNILIB_RUST_TARGET"))
     System.out.println("jniLibOsClassifier " + jniLibOsClassifier())
     def targetDir = rustTargetTriple() ?: ""
     from "wasmtime-jni/target/$targetDir/release"
     include '*.so', '*.dylib', "*.dll"
-    rename "^(lib)?wasmtime_jni", "\$1wasmtime_jni_${project.version}_macos_aarch64"
+    rename "^(lib)?wasmtime_jni", "\$1wasmtime_jni_${project.version}_System.getenv("ARTIFACT_SUFFIX"))"
     into new File(project.buildDir, "jni-libs")
 }
 

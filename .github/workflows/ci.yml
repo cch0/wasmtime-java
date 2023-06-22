@@ -10,7 +10,18 @@ on:
 jobs:
 
   build-macos-aarch64:
-    runs-on: macos-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: macos-12
+            target: aarch64-apple-darwin
+            toolchain: nightly-x86_64-apple-darwin
+            artifact_suffix: macos_aarch64
+          - os: ubuntu-22.04
+            target: aarch64-unknown-linux-gnu
+            toolchain: nightly-aarch64-unknown-linux-gnu
+            artifact_suffix: linux_aarch64
     steps:
       - uses: actions/checkout@v2
 
@@ -26,14 +37,14 @@ jobs:
           override: true
           components: rustfmt
 
-      - name: build ARM64 Darwin
+      - name: build custom artifact
         run: |
-          rustup component add rust-src --toolchain nightly-x86_64-apple-darwin
-          rustup target add aarch64-apple-darwin        
-          JNILIB_RUST_TARGET=aarch64-apple-darwin ./gradlew copyJniLibForArm64Darwin
-          ls -l wasmtime-jni/target/aarch64-apple-darwin/release
-          ls -l wasmtime-jni/target/release
-          ls -l build/jni-libs/
+          rustup component add rust-src --toolchain ${{ matrix.toolchain }}
+          rustup target add ${{ matrix.target }}        
+          JNILIB_RUST_TARGET=${{ matrix.target }} ARTIFACT_SUFFIX=${{ matrix.artifact_suffix }} ./gradlew copyJniLibCustomTarget
+#          ls -l wasmtime-jni/target/aarch64-apple-darwin/release
+#          ls -l wasmtime-jni/target/release
+#          ls -l build/jni-libs/
 
       - name: Save JNI lib output
         #      if: startsWith(github.ref, 'refs/tags/')
@@ -44,74 +55,74 @@ jobs:
 
 
 
-  build:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest, macos-latest]
-#        os: [ubuntu-latest, macos-latest, windows-latest]
-    steps:
-    - uses: actions/checkout@v2
+#  build:
+#    runs-on: ${{ matrix.os }}
+#    strategy:
+#      matrix:
+#        os: [ubuntu-latest, macos-latest]
+##        os: [ubuntu-latest, macos-latest, windows-latest]
+#    steps:
+#    - uses: actions/checkout@v2
+#
+#    - name: Set up JDK 1.8
+#      uses: actions/setup-java@v1
+#      with:
+#        java-version: 1.8
+#
+#    - name: Set up Rust
+#      uses: actions-rs/toolchain@v1
+#      with:
+##        toolchain: nightly-2022-12-11
+#        toolchain: nightly
+#        override: true
+#        components: rustfmt
+#
+#    - name: Build with Gradle
+#      run: ./gradlew build copyJniLib
+#
+#    - name: Save JNI lib output
+##      if: startsWith(github.ref, 'refs/tags/')
+#      uses: actions/upload-artifact@v2
+#      with:
+#        name: jni-libs
+#        path: build/jni-libs/*
 
-    - name: Set up JDK 1.8
-      uses: actions/setup-java@v1
-      with:
-        java-version: 1.8
-
-    - name: Set up Rust
-      uses: actions-rs/toolchain@v1
-      with:
-#        toolchain: nightly-2022-12-11
-        toolchain: nightly
-        override: true
-        components: rustfmt
-
-    - name: Build with Gradle
-      run: ./gradlew build copyJniLib
-
-    - name: Save JNI lib output
-#      if: startsWith(github.ref, 'refs/tags/')
-      uses: actions/upload-artifact@v2
-      with:
-        name: jni-libs
-        path: build/jni-libs/*
-
-  collect:
-    needs: [build, build-macos-aarch64]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-
-      - name: Set up JDK 1.8
-        uses: actions/setup-java@v1
-        with:
-          java-version: 1.8
-
-      - name: Set up Rust
-        uses: actions-rs/toolchain@v1
-        with:
-          #        toolchain: nightly-2022-12-11
-          toolchain: nightly
-          override: true
-          components: rustfmt
-
-      - name: Build
-        run: ./gradlew build
-
-      - name: Restore JNI libs
-        uses: actions/download-artifact@v2
-        with:
-          name: jni-libs
-          path: build/jni-libs
-
-      - name: Build universal jar
-        run: ./gradlew universalJar
-
-      - name: Save universal jar
-        uses: actions/upload-artifact@v2
-        with:
-          name: universal-jar
-          path: build/libs/*-universal.jar
+#  collect:
+#    needs: [build, build-macos-aarch64]
+#    runs-on: ubuntu-latest
+#    steps:
+#      - uses: actions/checkout@v2
+#
+#      - name: Set up JDK 1.8
+#        uses: actions/setup-java@v1
+#        with:
+#          java-version: 1.8
+#
+#      - name: Set up Rust
+#        uses: actions-rs/toolchain@v1
+#        with:
+#          #        toolchain: nightly-2022-12-11
+#          toolchain: nightly
+#          override: true
+#          components: rustfmt
+#
+#      - name: Build
+#        run: ./gradlew build
+#
+#      - name: Restore JNI libs
+#        uses: actions/download-artifact@v2
+#        with:
+#          name: jni-libs
+#          path: build/jni-libs
+#
+#      - name: Build universal jar
+#        run: ./gradlew universalJar
+#
+#      - name: Save universal jar
+#        uses: actions/upload-artifact@v2
+#        with:
+#          name: universal-jar
+#          path: build/libs/*-universal.jar
 
   publish:
     if: startsWith(github.ref, 'refs/tags/')
