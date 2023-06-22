@@ -99,7 +99,8 @@ jobs:
         components: rustfmt
 
     - name: Build with Gradle
-      run: ./gradlew build copyJniLib
+      run: |
+        JNILIB_RUST_TARGET=${{ matrix.target }} ./gradlew build copyJniLib
 
     - name: Save JNI lib output
 #      if: startsWith(github.ref, 'refs/tags/')
