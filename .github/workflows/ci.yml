@@ -37,6 +37,7 @@ jobs:
           override: true
           components: rustfmt
 
+
       - name: build custom artifact
         run: |
 #          rustup component add rust-src --toolchain ${{ matrix.toolchain }}
