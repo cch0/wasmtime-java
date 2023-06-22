@@ -37,10 +37,9 @@ jobs:
           override: true
           components: rustfmt
 
-
+      #          rustup component add rust-src --toolchain ${{ matrix.toolchain }}
       - name: build custom artifact
         run: |
-#          rustup component add rust-src --toolchain ${{ matrix.toolchain }}
           rustup toolchain install ${{ matrix.toolchain }}
           rustup target add ${{ matrix.target }}        
           JNILIB_RUST_TARGET=${{ matrix.target }} ARTIFACT_SUFFIX=${{ matrix.artifact_suffix }} ./gradlew copyJniLibCustomTarget
