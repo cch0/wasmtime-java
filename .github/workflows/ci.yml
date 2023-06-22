@@ -30,6 +30,7 @@ jobs:
         with:
           java-version: 1.8
 
+
       - name: Set up Rust
         uses: actions-rs/toolchain@v1
         with:
@@ -37,7 +38,7 @@ jobs:
           override: true
           components: rustfmt
 
-      #          rustup component add rust-src --toolchain ${{ matrix.toolchain }}
+
       - name: build custom artifact
         run: |
           rustup toolchain install ${{ matrix.toolchain }}
@@ -46,6 +47,8 @@ jobs:
 #          ls -l wasmtime-jni/target/aarch64-apple-darwin/release
 #          ls -l wasmtime-jni/target/release
 #          ls -l build/jni-libs/
+      #          rustup component add rust-src --toolchain ${{ matrix.toolchain }}
+
 
       - name: Save JNI lib output
         #      if: startsWith(github.ref, 'refs/tags/')
