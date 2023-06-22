@@ -62,6 +62,9 @@ public final class NativeLibraryLoader {
         String ext = platform.ext;
         String fileName = platform.prefix + NATIVE_LIBRARY_NAME + '_' + version + '_' + platform.classifier
             + '_' + platform.arch;
+
+        log.info("detected platform {}, fileName: {}", platform, fileName);
+
         Path tempFile = Files.createTempFile(fileName, ext);
         try (InputStream in = NativeLibraryLoader.class.getResourceAsStream('/' + fileName + ext)) {
             Files.copy(in, tempFile, StandardCopyOption.REPLACE_EXISTING);

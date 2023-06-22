@@ -17,11 +17,11 @@ jobs:
           - os: macos-12
             target: aarch64-apple-darwin
             toolchain: nightly-x86_64-apple-darwin
-            artifact_suffix: macos_aarch64
+            jni_lib_suffix_override: macos_aarch64
           - os: ubuntu-22.04
             target: aarch64-unknown-linux-gnu
             toolchain: nightly-x86_64-unknown-linux-gnu
-            artifact_suffix: linux_aarch64
+            jni_lib_suffix_override: linux_aarch64
     steps:
       - uses: actions/checkout@v2
 
@@ -38,7 +38,7 @@ jobs:
           override: true
           components: rustfmt
 
-      - name: linux x86_64 cross build aarch64
+      - name: build JNI lin specific to linux x86_64 cross build aarch64
         if: matrix.target == 'aarch64-unknown-linux-gnu'
         run: |
           sudo apt-get install -qy binutils-aarch64-linux-gnu gcc-aarch64-linux-gnu g++-aarch64-linux-gnu
@@ -54,15 +54,15 @@ jobs:
           rustup toolchain install ${{ matrix.toolchain }}
           rustup component add rust-src --toolchain ${{ matrix.toolchain }}
           rustup target add ${{ matrix.target }}        
-          JNILIB_RUST_TARGET=${{ matrix.target }} ARTIFACT_SUFFIX=${{ matrix.artifact_suffix }} ./gradlew copyJniLib
+          JNILIB_RUST_TARGET=${{ matrix.target }} JNI_LIB_SUFFIX_OVERRIDE=${{ matrix.jni_lib_suffix_override }} ./gradlew copyJniLib
 
-      - name: build custom artifact
+      - name: build JNI lib
         if: matrix.target != 'aarch64-unknown-linux-gnu'
         run: |        
           rustup toolchain install ${{ matrix.toolchain }}
           rustup component add rust-src --toolchain ${{ matrix.toolchain }}
           rustup target add ${{ matrix.target }}        
-          JNILIB_RUST_TARGET=${{ matrix.target }} ARTIFACT_SUFFIX=${{ matrix.artifact_suffix }} ./gradlew copyJniLib
+          JNILIB_RUST_TARGET=${{ matrix.target }} JNI_LIB_SUFFIX_OVERRIDE=${{ matrix.jni_lib_suffix_override }} ./gradlew copyJniLib
 
 
       - name: Save JNI lib output

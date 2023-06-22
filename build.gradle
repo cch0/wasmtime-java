@@ -57,8 +57,8 @@ test {
     }
 }
 
-static def jniLibOverride() {
-    System.getenv("ARTIFACT_SUFFIX")
+static def jniLibSuffixOverride() {
+    System.getenv("JNI_LIB_SUFFIX_OVERRIDE")
 }
 
 static def jniLibOsClassifier() {
@@ -202,7 +202,7 @@ task buildJniLib(type:Exec) {
 task copyJniLib(type: Copy) {
     dependsOn 'buildJniLib'
     def targetDir = rustTargetTriple() ?: ""
-    def jniLibSuffix = jniLibOverride() ?: rustTargetTriple() ?: ""
+    def jniLibSuffix = jniLibSuffixOverride() ?: jniLibOsClassifier() ?: ""
     from "wasmtime-jni/target/$targetDir/release"
     include '*.so', '*.dylib', "*.dll"
     rename "^(lib)?wasmtime_jni", "\$1wasmtime_jni_${project.version}_$jniLibSuffix"
