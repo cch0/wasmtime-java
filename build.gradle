@@ -163,8 +163,8 @@ task generateJniInterfaces(type:JavaExec) {
 task buildJniLibCustomTarget(type:Exec) {
     dependsOn 'generateJniInterfaces'
     workingDir './wasmtime-jni'
-    def triple = rustTargetTriple() ?: ""
-    def args = ['cargo', '+nightly', 'build', '--release', '--target', $triple, '-Zbuild-std']
+    def triple = rustTargetTriple()
+    def args = ['cargo', '+nightly', 'build', '--release', '-Zbuild-std']
     if (triple != null) {
         args += ['--target', triple]
     }
