@@ -37,10 +37,22 @@ jobs:
           override: true
           components: rustfmt
 
-      - name: specific to linux cross build aarch64
+      - name: specific to linux x86_64 cross build aarch64
         if: matrix.target == 'aarch64-unknown-linux-gnu'
         run: |
           sudo apt-get install -qy binutils-aarch64-linux-gnu gcc-aarch64-linux-gnu g++-aarch64-linux-gnu
+#          export CMAKE_SYSTEM_NAME=Linux
+#          export TARGET=aarch64-linux-gnu
+#          export TARGET_AR=aarch64-linux-gnu-ar
+#          export TARGET_CC=aarch64-linux-gnu-gcc
+#          export TARGET_CXX=aarch64-linux-gnu-g++
+#          export TARGET_RANLIB=aarch64-linux-gnu-ranlib
+#          export TARGET_CPP=aarch64-linux-gnu-cpp
+#          export TARGET_LD=aarch64-linux-gnu-ld
+#          export CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER=$TARGET_CC
+
+      - name: build custom artifact
+        run: |
           export CMAKE_SYSTEM_NAME=Linux
           export TARGET=aarch64-linux-gnu
           export TARGET_AR=aarch64-linux-gnu-ar
@@ -49,10 +61,7 @@ jobs:
           export TARGET_RANLIB=aarch64-linux-gnu-ranlib
           export TARGET_CPP=aarch64-linux-gnu-cpp
           export TARGET_LD=aarch64-linux-gnu-ld
-          export CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER=$TARGET_CC
-
-      - name: build custom artifact
-        run: |
+          export CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER=$TARGET_CC          
           rustup toolchain install ${{ matrix.toolchain }}
           rustup component add rust-src --toolchain ${{ matrix.toolchain }}
           rustup target add ${{ matrix.target }}        
