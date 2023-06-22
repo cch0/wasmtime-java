@@ -42,6 +42,7 @@ jobs:
       - name: build custom artifact
         run: |
           rustup toolchain install ${{ matrix.toolchain }}
+          rustup component add rust-src --toolchain ${{ matrix.toolchain }}
           rustup target add ${{ matrix.target }}        
           JNILIB_RUST_TARGET=${{ matrix.target }} ARTIFACT_SUFFIX=${{ matrix.artifact_suffix }} ./gradlew copyJniLibCustomTarget
 #          ls -l wasmtime-jni/target/aarch64-apple-darwin/release
