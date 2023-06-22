@@ -129,7 +129,8 @@ jobs:
           components: rustfmt
 
       - name: Build
-        run: ./gradlew build
+        run: |
+          ./gradlew build
 
       - name: Restore JNI libs
         uses: actions/download-artifact@v2

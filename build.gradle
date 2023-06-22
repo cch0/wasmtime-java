@@ -9,7 +9,7 @@ plugins {
 }
 
 group = 'io.github.kawamuray.wasmtime'
-version = '0.14.0.1'
+version = '0.14.0.2'
 
 repositories {
     mavenCentral()
@@ -163,8 +163,8 @@ task generateJniInterfaces(type:JavaExec) {
 task buildJniLibCustomTarget(type:Exec) {
     dependsOn 'generateJniInterfaces'
     workingDir './wasmtime-jni'
-    def args = ['cargo', '+nightly', 'build', '--release', '--target', System.getenv("JNILIB_RUST_TARGET"), '-Zbuild-std']
-    def triple = rustTargetTriple()
+    def triple = rustTargetTriple() ?: ""
+    def args = ['cargo', '+nightly', 'build', '--release', '--target', $targetDir, '-Zbuild-std']
     if (triple != null) {
         args += ['--target', triple]
     }
