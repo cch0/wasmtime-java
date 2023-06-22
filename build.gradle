@@ -176,9 +176,10 @@ task copyJniLibCustomTarget(type: Copy) {
     System.out.println("target triple " + System.getenv("JNILIB_RUST_TARGET"))
     System.out.println("jniLibOsClassifier " + jniLibOsClassifier())
     def targetDir = rustTargetTriple() ?: ""
+    def artifactSuffix = System.getenv("ARTIFACT_SUFFIX")
     from "wasmtime-jni/target/$targetDir/release"
     include '*.so', '*.dylib', "*.dll"
-    rename "^(lib)?wasmtime_jni", "\$1wasmtime_jni_${project.version}_System.getenv("ARTIFACT_SUFFIX"))"
+    rename "^(lib)?wasmtime_jni", "\$1wasmtime_jni_${project.version}_$artifactSuffix"
     into new File(project.buildDir, "jni-libs")
 }
 
