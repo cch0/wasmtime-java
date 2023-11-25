@@ -1,5 +1,6 @@
 name: CI
 on:
+  workflow_dispatch:
   push:
 #    branches: [ master ]
 #    tags:
@@ -50,18 +51,18 @@ jobs:
           export TARGET_RANLIB=aarch64-linux-gnu-ranlib
           export TARGET_CPP=aarch64-linux-gnu-cpp
           export TARGET_LD=aarch64-linux-gnu-ld
-          export CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER=$TARGET_CC          
+          export CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER=$TARGET_CC
           rustup toolchain install ${{ matrix.toolchain }}
           rustup component add rust-src --toolchain ${{ matrix.toolchain }}
-          rustup target add ${{ matrix.target }}        
+          rustup target add ${{ matrix.target }}
           JNILIB_RUST_TARGET=${{ matrix.target }} JNI_LIB_SUFFIX_OVERRIDE=${{ matrix.jni_lib_suffix_override }} ./gradlew copyJniLib
 
       - name: build JNI lib
         if: matrix.target != 'aarch64-unknown-linux-gnu'
-        run: |        
+        run: |
           rustup toolchain install ${{ matrix.toolchain }}
           rustup component add rust-src --toolchain ${{ matrix.toolchain }}
-          rustup target add ${{ matrix.target }}        
+          rustup target add ${{ matrix.target }}
           JNILIB_RUST_TARGET=${{ matrix.target }} JNI_LIB_SUFFIX_OVERRIDE=${{ matrix.jni_lib_suffix_override }} ./gradlew copyJniLib
 
 
