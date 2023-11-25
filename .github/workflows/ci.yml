@@ -112,7 +112,8 @@ jobs:
         path: build/jni-libs/*
 
   collect:
-    needs: [build, build-custom-target]
+    # needs: [build, build-custom-target]
+    needs: [build]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
