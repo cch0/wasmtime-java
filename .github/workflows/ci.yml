@@ -10,68 +10,68 @@ on:
 
 jobs:
 
-  build-custom-target:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        include:
-          - os: macos-12
-            target: aarch64-apple-darwin
-            toolchain: nightly-x86_64-apple-darwin
-            jni_lib_suffix_override: macos_aarch64
+  # build-custom-target:
+  #   runs-on: ${{ matrix.os }}
+    # strategy:
+      # matrix:
+        # include:
+          # - os: macos-12
+          #   target: aarch64-apple-darwin
+          #   toolchain: nightly-x86_64-apple-darwin
+          #   jni_lib_suffix_override: macos_aarch64
           # - os: ubuntu-22.04
           #   target: aarch64-unknown-linux-gnu
           #   toolchain: nightly-x86_64-unknown-linux-gnu
           #   jni_lib_suffix_override: linux_aarch64
-    steps:
-      - uses: actions/checkout@v2
+#     steps:
+#       - uses: actions/checkout@v2
 
-      - name: Set up JDK 1.8
-        uses: actions/setup-java@v1
-        with:
-          java-version: 1.8
+#       - name: Set up JDK 1.8
+#         uses: actions/setup-java@v1
+#         with:
+#           java-version: 1.8
 
-      - name: Set up Rust
-        uses: actions-rs/toolchain@v1
-        with:
-#          toolchain: nightly
-          toolchain: nightly-2022-12-11
-          override: true
-          components: rustfmt
+#       - name: Set up Rust
+#         uses: actions-rs/toolchain@v1
+#         with:
+# #          toolchain: nightly
+#           toolchain: nightly-2022-12-11
+#           override: true
+#           components: rustfmt
 
-      - name: build JNI lin specific to linux x86_64 cross build aarch64
-        if: matrix.target == 'aarch64-unknown-linux-gnu'
-        run: |
-          sudo apt-get install -qy binutils-aarch64-linux-gnu gcc-aarch64-linux-gnu g++-aarch64-linux-gnu
-          export CMAKE_SYSTEM_NAME=Linux
-          export TARGET=aarch64-linux-gnu
-          export TARGET_AR=aarch64-linux-gnu-ar
-          export TARGET_CC=aarch64-linux-gnu-gcc
-          export TARGET_CXX=aarch64-linux-gnu-g++
-          export TARGET_RANLIB=aarch64-linux-gnu-ranlib
-          export TARGET_CPP=aarch64-linux-gnu-cpp
-          export TARGET_LD=aarch64-linux-gnu-ld
-          export CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER=$TARGET_CC
-          rustup toolchain install ${{ matrix.toolchain }}
-          rustup component add rust-src --toolchain ${{ matrix.toolchain }}
-          rustup target add ${{ matrix.target }}
-          JNILIB_RUST_TARGET=${{ matrix.target }} JNI_LIB_SUFFIX_OVERRIDE=${{ matrix.jni_lib_suffix_override }} ./gradlew copyJniLib
+#       - name: build JNI lin specific to linux x86_64 cross build aarch64
+#         if: matrix.target == 'aarch64-unknown-linux-gnu'
+#         run: |
+#           sudo apt-get install -qy binutils-aarch64-linux-gnu gcc-aarch64-linux-gnu g++-aarch64-linux-gnu
+#           export CMAKE_SYSTEM_NAME=Linux
+#           export TARGET=aarch64-linux-gnu
+#           export TARGET_AR=aarch64-linux-gnu-ar
+#           export TARGET_CC=aarch64-linux-gnu-gcc
+#           export TARGET_CXX=aarch64-linux-gnu-g++
+#           export TARGET_RANLIB=aarch64-linux-gnu-ranlib
+#           export TARGET_CPP=aarch64-linux-gnu-cpp
+#           export TARGET_LD=aarch64-linux-gnu-ld
+#           export CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER=$TARGET_CC
+#           rustup toolchain install ${{ matrix.toolchain }}
+#           rustup component add rust-src --toolchain ${{ matrix.toolchain }}
+#           rustup target add ${{ matrix.target }}
+#           JNILIB_RUST_TARGET=${{ matrix.target }} JNI_LIB_SUFFIX_OVERRIDE=${{ matrix.jni_lib_suffix_override }} ./gradlew copyJniLib
 
-      - name: build JNI lib
-        if: matrix.target != 'aarch64-unknown-linux-gnu'
-        run: |
-          rustup toolchain install ${{ matrix.toolchain }}
-          rustup component add rust-src --toolchain ${{ matrix.toolchain }}
-          rustup target add ${{ matrix.target }}
-          JNILIB_RUST_TARGET=${{ matrix.target }} JNI_LIB_SUFFIX_OVERRIDE=${{ matrix.jni_lib_suffix_override }} ./gradlew copyJniLib
+#       - name: build JNI lib
+#         if: matrix.target != 'aarch64-unknown-linux-gnu'
+#         run: |
+#           rustup toolchain install ${{ matrix.toolchain }}
+#           rustup component add rust-src --toolchain ${{ matrix.toolchain }}
+#           rustup target add ${{ matrix.target }}
+#           JNILIB_RUST_TARGET=${{ matrix.target }} JNI_LIB_SUFFIX_OVERRIDE=${{ matrix.jni_lib_suffix_override }} ./gradlew copyJniLib
 
 
-      - name: Save JNI lib output
-        #      if: startsWith(github.ref, 'refs/tags/')
-        uses: actions/upload-artifact@v2
-        with:
-          name: jni-libs
-          path: build/jni-libs/*
+#       - name: Save JNI lib output
+#         #      if: startsWith(github.ref, 'refs/tags/')
+#         uses: actions/upload-artifact@v2
+#         with:
+#           name: jni-libs
+#           path: build/jni-libs/*
 
 
 
